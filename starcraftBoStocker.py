@@ -71,14 +71,8 @@ def create():
     print(f"{affichage['titre']}{affichage['menu_race']}")
     commande = input().lower()
     if commande != "back":
-        if commande == "zerg":
-            repertoire = repertoires['zerg']
-            pass
-        elif commande == "terran":
-            repertoire = repertoires['terran']
-            pass
-        elif commande == "protoss":
-            repertoire = repertoires['protoss']
+        if commande in repertoires:
+            repertoire = repertoires[commande]
         else:
             erreur("Commande inconnue")
             return # Sortie du menu "create"
@@ -139,15 +133,9 @@ def info():
     }
     print(f"{affichage['titre']}{affichage['menu_race']}")
     commande = input().lower()
-    if commande != "back":
-        if commande == "zerg":
-            repertoire = repertoires['zerg']
-            pass
-        elif commande == "terran":
-            repertoire = repertoires['terran']
-            pass
-        elif commande == "protoss":
-            repertoire = repertoires['protoss']
+    if commande not in info_commandes_menu_liste_bo:
+        if commande in repertoires:
+            repertoire = repertoires[commande]
         else:
             erreur("Commande inconnue")
             return # Sortie du menu "info"
