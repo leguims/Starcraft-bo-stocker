@@ -12,7 +12,8 @@ version = "1.1"
 # ==> https://stackoverflow.com/questions/9632995/how-to-easily-print-ascii-art-text
 
 
-# TODO : creators = ("Eliot Hermabessiere", "Cyprien Rousselot")
+# Afin de gérer tout nouveau contributeur sans changer le coeur du programme.
+createurs = ("Eliot Hermabessiere", "Cyprien Rousselot")
 
 # TODO : gérer les couleurs du texte
 # Colors : explications sur ==> http://ozzmaker.com/add-colour-to-text-in-python/
@@ -153,7 +154,7 @@ def info():
 
         print(f"{affichage['titre']}{affichage['menu_liste_bo']}")
         liste_fichiers_bo = [f for f in listdir(repertoire) if (path.isfile(path.join(repertoire, f))) and (filename_extension in f)]
-        # TODO Numéroter les BO pour les choisir par leur index
+        # Numéroter les BO pour les choisir par leur index
         for index, bo in enumerate(liste_fichiers_bo):
             print(f"{index} - {bo[0:-len(filename_extension)]}")
         numero_bo = int(input("Saisissez le numéro du BO : "))
@@ -190,10 +191,21 @@ def erreur(description = ""):
 """)
     input("press 'RETURN' key ...")
 
-
+def texte_createurs():
+    """Retourne la liste des createur sous forme de texte avec les séparateurs appropriés (',' et 'et' selon la position)."""
+    texte = ""
+    for i, createur in enumerate(createurs):
+        if i == 0:
+            texte = texte + createur # Premier de la liste
+        elif (i+1) == len(createurs):
+            texte = texte + " et " + createur # Dernier de la liste
+        else:
+            texte = texte + ", " + createur # Tous les autres
+    return texte
+    
 def accueil():
     print(f"""Starcraft Build-order stocker version {version}
-Cree par Eliot Hermabessiere et Cyprien Rousselot :)
+Cree par {texte_createurs()} :)
 Porté en Python par GuiGeek
 
                                _______________________________________________________ 
