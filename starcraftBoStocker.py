@@ -69,7 +69,7 @@ def create():
 """,
 }
     print(f"{affichage['titre']}{affichage['menu_race']}")
-    commande = input()
+    commande = input().lower()
     if commande != "back":
         if commande == "zerg":
             repertoire = repertoires['zerg']
@@ -138,7 +138,7 @@ def info():
 """,
     }
     print(f"{affichage['titre']}{affichage['menu_race']}")
-    commande = input()
+    commande = input().lower()
     if commande != "back":
         if commande == "zerg":
             repertoire = repertoires['zerg']
@@ -166,7 +166,7 @@ def info():
         texte_build_order = lire_fichier(path.join(repertoire, nom_fichier))
         print(texte_build_order)
 
-        commande = input("Saisissez votre commande : ")
+        commande = input("Saisissez votre commande : ").lower()
         if commande == '/remove':
             print(f"{affichage['titre']}{affichage['menu_remove']}")
             remove(path.join(repertoire, nom_fichier))
@@ -225,7 +225,7 @@ Porté en Python par GuiGeek
 
 
 """)
-    commande = input()
+    commande = input().lower()
     if commande == "create":
         create()
     elif commande == "info":
