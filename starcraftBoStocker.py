@@ -154,10 +154,11 @@ def info():
         print(f"{affichage['titre']}{affichage['menu_liste_bo']}")
         liste_fichiers_bo = [f for f in listdir(repertoire) if (path.isfile(path.join(repertoire, f))) and (filename_extension in f)]
         # TODO Numéroter les BO pour les choisir par leur index
-        for bo in liste_fichiers_bo:
-            print(bo[0:-len(filename_extension)])
-        nom_bo = input("Saisissez le nom du BO : ")
-        nom_fichier = nom_bo + filename_extension
+        for index, bo in enumerate(liste_fichiers_bo):
+            print(f"{index} - {bo[0:-len(filename_extension)]}")
+        numero_bo = int(input("Saisissez le numéro du BO : "))
+        nom_bo = liste_fichiers_bo[numero_bo][0:-len(filename_extension)]
+        nom_fichier = liste_fichiers_bo[numero_bo]
 
         print(f"{affichage['titre']}{affichage['menu_affiche_bo']}")
         print(40*" " + nom_bo)
