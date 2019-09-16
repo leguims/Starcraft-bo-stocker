@@ -1,10 +1,5 @@
 from os import path, listdir, makedirs, remove, system
 
-
-
-
-
-
 version = "1.1"
 
 # TODO : Générer les titres avec des ASCII-ART
@@ -29,21 +24,15 @@ repertoires = { 'zerg': path.join('BO', 'zerg'),
 
 filename_extension = '.txt'
 
-def sauvegarder_fichier(fichier, texte):
-    # Crée l'arborescence si elle est absente
-    chemin = path.dirname(fichier)
-    if not path.exists(chemin):
-        makedirs(chemin)
-    # Enregistre le fichier
-    with open(fichier, "w") as f:
-        f.write(texte)
 
-def lire_fichier(fichier):
-    with open(fichier) as f:
-        texte = f.read()
-    return texte
 
 def create():
+    # Dictionnaire sur les différentes commandes du menu
+    create_commandes_menu_saisie = {
+        '/finish': {'description': 'pour terminer la saisie du BO'},
+        '/cancel': {'description': 'pour annuler la creation de BO'},
+        }
+    
     # Dictionnaire sur les différents affichages du menu
     affichage = {
         'titre': """
@@ -61,10 +50,9 @@ def create():
                                             Zerg / Protoss / Terran
 
 """,
-        'menu_saisie': """
+        'menu_saisie': f"""
                                Listez les differentes etapes de vore BO puis
-                                 ecrivez /finish quand vous aurez termine.
-                                  /cancel pour annuler la creation de BO
+{texte_commandes(35, create_commandes_menu_saisie)}
 
 """,
 }
@@ -82,21 +70,35 @@ def create():
         fin_saisie_build_ordre = False
         while not fin_saisie_build_ordre:
             saisie = input("Saisissez l'étape : ")
-            if (saisie == '/finish') or (saisie == '/cancel'):
+            if saisie in create_commandes_menu_saisie:
                 fin_saisie_build_ordre = True
             else:
                 texte_build_order = texte_build_order + '\r\n' + saisie
-        if saisie == '/finish':
-            print(f"{affichage['titre']}")
-            nom_fichier = input('Nommez votre Build-Order : ') + filename_extension
-            # Sauvegarder le fichier BO dans le repertoire
-            sauvegarder_fichier(path.join(repertoire, nom_fichier), texte_build_order)
-            print(f'Sauvegarde le build-order "{nom_fichier[:-len(filename_extension)]}" dans le fichier "{path.join(repertoire, nom_fichier)}"')
+        if saisie in create_commandes_menu_saisie:
+            if 'fonction' in create_commandes_menu_saisie[saisie]:
+                create_commandes_menu_saisie[saisie]['fonction']()
+            elif saisie == '/finish':
+                print(f"{affichage['titre']}")
+                nom_fichier = input('Nommez votre Build-Order : ') + filename_extension
+                # Sauvegarder le fichier BO dans le repertoire
+                sauvegarder_fichier(path.join(repertoire, nom_fichier), texte_build_order)
+                print(f'Sauvegarde le build-order "{nom_fichier[:-len(filename_extension)]}" dans le fichier "{path.join(repertoire, nom_fichier)}"')
             
 
 
 
 def info():
+    # Dictionnaire sur les différentes commandes du menu
+    info_commandes_menu_liste_bo = {
+        '/back': {'description': 'pour revenir en arriere'},
+        }
+    
+    info_commandes_menu_affiche_bo = {
+        '/back': {'description': 'pour revenir en arriere'},
+        '/remove': {'description': 'pour supprimer ce BO'},
+        '/modify': {'description': 'pour le modifier'},
+        }
+    
     # Dictionnaire sur les différents affichages du menu
     affichage = {
         'titre': """
@@ -113,20 +115,18 @@ def info():
                                             Zerg / Protoss / Terran
 
 """,
-        'menu_liste_bo': """
-                             ecrivez le nom du BO a afficher (sans le .txt)
-                                  /back pour revenir en arriere
+        'menu_liste_bo': f"""
+                             ecrivez le numero du BO a afficher
+{texte_commandes(35, info_commandes_menu_liste_bo)}
 
-                                      Voici les BO Enregistre:
+                                      Voici les BO Enregistres:
 
 """,
         'menu_affiche_bo': f"""
-                                     /back pour revenir en arriere
-                                     /remove pour supprimer ce BO
-                                       /modify pour le modifier
+{texte_commandes(35, info_commandes_menu_affiche_bo)}
 
 """,
-        'menu_remove': f"""
+        'menu_remove': """
                                             BO supprime
 
 """,
@@ -155,14 +155,17 @@ def info():
         print(texte_build_order)
 
         commande = input("Saisissez votre commande : ").lower()
-        if commande == '/remove':
-            print(f"{affichage['titre']}{affichage['menu_remove']}")
-            remove(path.join(repertoire, nom_fichier))
-            print(f'Le build-order "{nom_bo}" est effacé.')
-        elif commande == '/modify':
-            print(f"{affichage['titre']}{affichage['menu_remove']}")
-            system(f"notepad {path.join(repertoire, nom_fichier)}")
-            print(f"""Modifiez le build-order "{nom_bo}" dans la fenêtre qui s'ouvre ...""")
+        if commande in info_commandes_menu_affiche_bo:
+            if 'fonction' in info_commandes_menu_affiche_bo[commande]:
+                info_commandes_menu_affiche_bo[commande]['fonction']()
+            elif commande == '/remove':
+                print(f"{affichage['titre']}{affichage['menu_remove']}")
+                remove(path.join(repertoire, nom_fichier))
+                print(f'Le build-order "{nom_bo}" est effacé.')
+            elif commande == '/modify':
+                print(f"{affichage['titre']}{affichage['menu_remove']}")
+                system(f"notepad {path.join(repertoire, nom_fichier)}")
+                print(f"""Modifiez le build-order "{nom_bo}" dans la fenêtre qui s'ouvre ...""")
 
 
 def erreur(description = ""):
@@ -179,19 +182,14 @@ def erreur(description = ""):
 """)
     input("press 'RETURN' key ...")
 
-def texte_createurs():
-    """Retourne la liste des createur sous forme de texte avec les séparateurs appropriés (',' et 'et' selon la position)."""
-    texte = ""
-    for i, createur in enumerate(createurs):
-        if i == 0:
-            texte = texte + createur # Premier de la liste
-        elif (i+1) == len(createurs):
-            texte = texte + " et " + createur # Dernier de la liste
-        else:
-            texte = texte + ", " + createur # Tous les autres
-    return texte
-    
+
 def accueil():
+    accueil_commandes = {
+        'info': {'description': 'pour voir les BO', 'fonction': info},
+        'create': {'description': 'pour ajouter un BO', 'fonction': create},
+        'exit': {'description': 'pour quitter'},
+        }
+    
     print(f"""Starcraft Build-order stocker version {version}
 Cree par {texte_createurs()} :)
 Porté en Python par GuiGeek
@@ -206,24 +204,56 @@ Porté en Python par GuiGeek
 
                                     Bienvenue dans le stocker de BO starcraft
 
-                                
-                                        -Ecrivez *info* pour voir les BO-
-                                        -Ou *create* pour en ajouter un.-
-                                        -Ou *exit* pour quitter         -
-
+                                    Ecrivez :
+{texte_commandes(40, accueil_commandes)}
 
 """)
     commande = input().lower()
-    if commande == "create":
-        create()
-    elif commande == "info":
-        info()
-    elif commande == "exit":
-        return False
+    if commande in accueil_commandes:
+        if 'fonction' in accueil_commandes[commande]:
+            accueil_commandes[commande]['fonction']()
+        elif commande == "exit":
+            return False
     else:
         erreur("Commande inconnue")
     return True
 
+
+# Fonctions partagées
+def sauvegarder_fichier(fichier, texte):
+    # Crée l'arborescence si elle est absente
+    chemin = path.dirname(fichier)
+    if not path.exists(chemin):
+        makedirs(chemin)
+    # Enregistre le fichier
+    with open(fichier, "w") as f:
+        f.write(texte)
+
+def lire_fichier(fichier):
+    with open(fichier) as f:
+        texte = f.read()
+    return texte
+
+def texte_createurs():
+    """Retourne la liste des createur sous forme de texte avec les séparateurs appropriés (',' et 'et' selon la position)."""
+    texte = ""
+    for i, createur in enumerate(createurs):
+        if i == 0:
+            texte = texte + createur # Premier de la liste
+        elif (i+1) == len(createurs):
+            texte = texte + " et " + createur # Dernier de la liste
+        else:
+            texte = texte + ", " + createur # Tous les autres
+    return texte
+    
+def texte_commandes(espaces, commandes):
+    """Retourne la liste des commandes/descriptions sous forme de texte."""
+    texte = ""
+    for commande, caracteristiques in commandes.items():
+        if 'description' in caracteristiques:
+            texte = texte + espaces*" " + f"*{commande}* : {caracteristiques['description']}\r\n"
+    return texte
+    
 
 if __name__ == "__main__":
     while accueil():
